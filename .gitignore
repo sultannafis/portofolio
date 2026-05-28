@@ -58,7 +58,6 @@ backend/.env.local
 *.test
 *.out
 main
-app
 backend/main
 backend/app
 backend/*.exe
