@@ -5,14 +5,16 @@ import { useEffect, useState } from 'react';
 import { settingsAPI, authAPI } from '@/lib/api';
 import { useThemeStore, useAuthStore } from '@/store';
 import toast from 'react-hot-toast';
-import { FiSave, FiSettings, FiSun, FiMoon, FiGlobe, FiUser, FiCode, FiImage, FiX, FiUpload, FiFileText, FiLink } from 'react-icons/fi';
+import { FiSave, FiSettings, FiSun, FiMoon, FiGlobe, FiUser, FiCode, FiImage, FiX, FiUpload, FiFileText, FiLink, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'account' | 'profile' | 'site' | 'social'>('account');
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [accountForm, setAccountForm] = useState({ username: '', email: '', password: '' });
+  const [accountForm, setAccountForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,6 +60,10 @@ export default function SettingsPage() {
 
   async function handleSaveAccount(e: React.FormEvent) {
     e.preventDefault();
+    if (accountForm.password.trim() !== '' && accountForm.password !== accountForm.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
     setSaving(true);
     try {
       const dataToUpdate: Record<string, string> = {
@@ -71,7 +77,7 @@ export default function SettingsPage() {
       await authAPI.updateProfile(dataToUpdate);
       toast.success('Account updated successfully!');
       if (accountForm.password.trim() !== '') {
-         setAccountForm((prev) => ({ ...prev, password: '' })); // clear password
+         setAccountForm((prev) => ({ ...prev, password: '', confirmPassword: '' })); // clear password
       }
       await me(); // refresh user store
     } catch { 
@@ -187,10 +193,27 @@ export default function SettingsPage() {
                   className="input-field" placeholder="Admin email" required />
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Change Password <span className="text-xs text-[var(--text-tertiary)] font-light">(Leave blank to keep current)</span></label>
-              <input type="password" value={accountForm.password} onChange={(e) => setAccountForm({ ...accountForm, password: e.target.value })}
-                className="input-field max-w-sm" placeholder="New password" minLength={6} />
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Change Password <span className="text-xs text-[var(--text-tertiary)] font-light">(Leave blank to keep current)</span></label>
+                <div className="relative">
+                  <input type={showPassword ? 'text' : 'password'} value={accountForm.password} onChange={(e) => setAccountForm({ ...accountForm, password: e.target.value })}
+                    className="input-field pr-10" placeholder="New password" minLength={6} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+                    {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Confirm Password</label>
+                <div className="relative">
+                  <input type={showConfirmPassword ? 'text' : 'password'} value={accountForm.confirmPassword} onChange={(e) => setAccountForm({ ...accountForm, confirmPassword: e.target.value })}
+                    className="input-field pr-10" placeholder="Confirm new password" minLength={6} />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+                    {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="pt-4 border-t border-[var(--border-subtle)]">
               <button type="submit" disabled={saving} className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
@@ -263,17 +286,10 @@ export default function SettingsPage() {
                 className="input-field resize-none" rows={4} placeholder="Brief introduction..." />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-medium mb-1 block">Public Email</label>
-                <input type="email" value={settings.email || ''} onChange={(e) => updateSetting('email', e.target.value)}
-                  className="input-field" placeholder="hello@example.com" />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Location</label>
-                <input type="text" value={settings.location || ''} onChange={(e) => updateSetting('location', e.target.value)}
-                  className="input-field" placeholder="City, Country" />
-              </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Location</label>
+              <input type="text" value={settings.location || ''} onChange={(e) => updateSetting('location', e.target.value)}
+                className="input-field max-w-sm" placeholder="City, Country" />
             </div>
 
             <div className="grid sm:grid-cols-3 gap-6 pt-4 border-t border-[var(--border-subtle)]">

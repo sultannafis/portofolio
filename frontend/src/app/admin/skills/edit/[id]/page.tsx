@@ -61,8 +61,15 @@ export default function EditSkillPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="w-8 h-8 border-4 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin"></div>
+      <div className="space-y-6 max-w-2xl mx-auto pb-12">
+        <div className="flex items-center gap-4">
+          <div className="skeleton w-10 h-10 rounded-lg" />
+          <div className="space-y-2 flex-1"><div className="skeleton h-6 w-48" /><div className="skeleton h-4 w-32" /></div>
+        </div>
+        <div className="glass-card p-6 sm:p-8 space-y-6">
+          {[...Array(4)].map((_, i) => <div key={i} className="space-y-2"><div className="skeleton h-4 w-24" /><div className="skeleton h-12 w-full" /></div>)}
+          <div className="skeleton h-12 w-40" />
+        </div>
       </div>
     );
   }

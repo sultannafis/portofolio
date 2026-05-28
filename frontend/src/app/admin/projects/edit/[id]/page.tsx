@@ -112,8 +112,17 @@ export default function EditProjectPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="w-8 h-8 border-4 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin"></div>
+      <div className="space-y-6 max-w-4xl mx-auto pb-12">
+        <div className="flex items-center gap-4">
+          <div className="skeleton w-10 h-10 rounded-lg" />
+          <div className="space-y-2 flex-1"><div className="skeleton h-6 w-56" /><div className="skeleton h-4 w-40" /></div>
+        </div>
+        <div className="glass-card p-6 sm:p-8 space-y-6">
+          <div className="skeleton h-48 w-full" />
+          <div className="grid sm:grid-cols-2 gap-6">{[...Array(2)].map((_, i) => <div key={i} className="space-y-2"><div className="skeleton h-4 w-20" /><div className="skeleton h-12 w-full" /></div>)}</div>
+          <div className="space-y-2"><div className="skeleton h-4 w-24" /><div className="skeleton h-28 w-full" /></div>
+          <div className="skeleton h-12 w-44" />
+        </div>
       </div>
     );
   }

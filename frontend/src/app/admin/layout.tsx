@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (isAuthenticated) {
       messagesAPI.countUnread().then(res => {
         setUnreadCount(res.data?.data?.count || 0);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [isAuthenticated, newMessage]);
 
@@ -88,8 +88,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!loaded || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-        <div className="w-12 h-12 border-4 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] gap-4">
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full bg-[var(--accent-primary)] blur-xl opacity-30 animate-pulse absolute inset-0" />
+          <div className="w-12 h-12 border-[3px] border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin relative" />
+        </div>
+        <p className="text-sm font-mono text-[var(--text-tertiary)] tracking-widest uppercase animate-pulse">Loading</p>
       </div>
     );
   }
@@ -172,8 +176,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <h1 className="text-xl sm:text-2xl font-display font-medium tracking-tight capitalize truncate">
                 {pageTitle || (
                   pathname.includes('/edit/') ? `Edit ${pathname.split('/')[2].slice(0, -1)}` :
-                  pathname.includes('/create') ? `Create ${pathname.split('/')[2].slice(0, -1)}` :
-                  (pathname.split('/').pop() || 'Dashboard')
+                    pathname.includes('/create') ? `Create ${pathname.split('/')[2].slice(0, -1)}` :
+                      (pathname.split('/').pop() || 'Dashboard')
                 )}
               </h1>
             </div>

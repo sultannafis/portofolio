@@ -16,7 +16,6 @@ const socialIcons: { key: string; Icon: React.ComponentType<{ className?: string
 export default function Footer({ settings }: FooterProps) {
   const { t } = useTranslation();
   const availableSocials = socialIcons.filter(s => settings[s.key]?.trim());
-  const email = settings.email?.trim();
 
   return (
     <footer className="relative overflow-hidden border-t border-[var(--border-subtle)] bg-[var(--bg-primary)]">

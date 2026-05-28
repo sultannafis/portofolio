@@ -41,33 +41,33 @@ export default function LoginPage() {
       {/* ─── Left Side: Visual Branding (Hidden on Mobile) ─── */}
       <div className="hidden lg:flex w-1/2 relative bg-[var(--bg-secondary)] overflow-hidden border-r border-[var(--border-subtle)] items-center justify-center">
         {/* Cinematic Backdrop Elements */}
-         <div className="absolute inset-0 texture-grid opacity-[0.1]" />
-         <div className="absolute top-0 right-0 w-[50vw] h-[100vh] bg-[var(--accent-primary)] blur-[200px] opacity-[0.08]" />
-         <div className="absolute bottom-0 left-0 w-[50vw] h-[100vh] bg-[var(--accent-secondary)] blur-[250px] opacity-[0.04]" />
-         <div className="noise-bg opacity-10" />
+        <div className="absolute inset-0 texture-grid opacity-[0.1]" />
+        <div className="absolute top-0 right-0 w-[50vw] h-[100vh] bg-[var(--accent-primary)] blur-[200px] opacity-[0.08]" />
+        <div className="absolute bottom-0 left-0 w-[50vw] h-[100vh] bg-[var(--accent-secondary)] blur-[250px] opacity-[0.04]" />
+        <div className="noise-bg opacity-10" />
 
-         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: premiumEase }} className="relative z-10 max-w-lg px-12">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex items-center justify-center mb-8 shadow-2xl">
-              <span className="text-2xl font-display font-bold text-[var(--accent-primary)]">P.</span>
-            </div>
-            <h1 className="text-5xl font-display font-semibold mb-6 tracking-tight text-[var(--text-primary)] leading-[1.1]">
-              System <br/><span className="text-[var(--text-tertiary)] font-light">Authentication</span>
-            </h1>
-            <p className="text-[var(--text-secondary)] font-light leading-relaxed text-lg mb-8 max-w-sm">
-              {t('login.description')}
-            </p>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: premiumEase }} className="relative z-10 max-w-lg px-12">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex items-center justify-center mb-8 shadow-2xl">
+            <span className="text-2xl font-display font-bold text-[var(--accent-primary)]">P.</span>
+          </div>
+          <h1 className="text-5xl font-display font-semibold mb-6 tracking-tight text-[var(--text-primary)] leading-[1.1]">
+            System <br /><span className="text-[var(--text-tertiary)] font-light">Authentication</span>
+          </h1>
+          <p className="text-[var(--text-secondary)] font-light leading-relaxed text-lg mb-8 max-w-sm">
+            {t('login.description')}
+          </p>
 
-            <div className="flex items-center gap-4 border-t border-[var(--border-color)] pt-8">
-              <div className="flex -space-x-2">
-                {[1,2,3].map(i => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-[var(--bg-secondary)] bg-[var(--bg-muted)] flex items-center justify-center">
-                    <FiLock className="w-3 h-3 text-[var(--text-tertiary)]" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-tertiary)]">{t('login.encrypted')}</span>
+          <div className="flex items-center gap-4 border-t border-[var(--border-color)] pt-8">
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-[var(--bg-secondary)] bg-[var(--bg-muted)] flex items-center justify-center">
+                  <FiLock className="w-3 h-3 text-[var(--text-tertiary)]" />
+                </div>
+              ))}
             </div>
-         </motion.div>
+            <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-tertiary)]">{t('login.encrypted')}</span>
+          </div>
+        </motion.div>
       </div>
 
       {/* ─── Right Side: Login Form (Full width on Mobile) ─── */}
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: premiumEase, delay: 0.1 }}
           className="w-full max-w-md relative z-10">
-          
+
           <div className="text-left mb-10">
             <div className="w-12 h-12 lg:hidden rounded-xl bg-white/5 border border-[var(--border-subtle)] flex items-center justify-center mb-6">
               <span className="text-xl font-display font-bold text-[var(--accent-primary)]">P.</span>
@@ -96,7 +96,7 @@ export default function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)} className="input-field pl-12 h-[3.5rem]" required autoFocus />
               </div>
             </div>
-            
+
             <div className="space-y-1">
               <div className="flex items-center justify-between ml-1 mb-1">
                 <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-tertiary)] block">{t('login.password')}</label>
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            
+
             <button type="submit" disabled={loading} className="btn-primary w-full h-[3.5rem] mt-8 text-[0.95rem] font-semibold tracking-wide" id="login-submit">
               {loading ? (
                 <div className="w-5 h-5 border-2 border-[var(--bg-primary)]/30 border-t-white rounded-full animate-spin mx-auto" />

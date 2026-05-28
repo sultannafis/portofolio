@@ -6,6 +6,7 @@ import (
 	"github.com/portfolio/backend/internal/repositories"
 	"github.com/portfolio/backend/internal/services"
 	"github.com/portfolio/backend/internal/utils"
+	ws "github.com/portfolio/backend/internal/websocket"
 )
 
 type SettingController struct {
@@ -41,6 +42,9 @@ func (ctrl *SettingController) Update(c *fiber.Ctx) error {
 	}
 	for key, value := range body {
 		ctrl.settingRepo.Upsert(key, value)
+	}
+	if ws.HubInstance != nil {
+		ws.HubInstance.BroadcastMessage("data:update", map[string]string{"entity": "settings", "action": "update"})
 	}
 	return utils.SuccessResponse(c, nil, "Settings updated")
 }

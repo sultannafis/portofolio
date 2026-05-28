@@ -416,6 +416,57 @@
 }
 
 /* ───────────────────────────────────────
+   SKELETON / SHIMMER LOADERS
+   ─────────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-muted);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent-glow) 40%,
+    rgba(56, 189, 248, 0.08) 60%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+:root:not(.dark) .skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(2, 132, 199, 0.06) 40%,
+    rgba(2, 132, 199, 0.10) 60%,
+    transparent 100%
+  );
+}
+
+@keyframes skeleton-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Glass Card (used extensively in admin) */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card:hover {
+  border-color: var(--border-accent);
+}
+
+/* ───────────────────────────────────────
    KEYFRAMES
    ─────────────────────────────────────── */
 @keyframes marquee {

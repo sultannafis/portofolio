@@ -33,6 +33,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
     },
+    icons: {
+      icon: '/images/Skyra-L1.png',
+      shortcut: '/images/Skyra-L1.png',
+      apple: '/images/Skyra-L1.png',
+    },
   };
 }
 

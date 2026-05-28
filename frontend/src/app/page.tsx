@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import { FiGithub, FiExternalLink, FiSend, FiSun, FiMoon, FiMenu, FiX, FiArrowUp, FiGlobe, FiUsers, FiLinkedin, FiTwitter, FiInstagram, FiMail, FiMapPin, FiCalendar, FiBriefcase, FiArrowRight } from 'react-icons/fi';
 import * as SiIcons from 'react-icons/si';
 import Footer from '@/components/layout/Footer';
+import PremiumLoader from '@/components/ui/PremiumLoader';
 
 /* ─── Premium Intentional Animations ─── */
 const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -188,11 +189,7 @@ export default function HomePage() {
   const navItems = ['home', 'about', 'skills', 'projects', 'experience', 'certificates', 'contact'];
 
   if (!isLoaded || loading) {
-    return (
-      <div suppressHydrationWarning className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-primary)]">
-        <div suppressHydrationWarning className="w-12 h-12 rounded-full border-2 border-[var(--border-accent)] border-t-[var(--accent-primary)] animate-spin" />
-      </div>
-    );
+    return <PremiumLoader />;
   }
 
   const sortedProjects = [...projects].sort((a, b) => (b.year || 0) - (a.year || 0));
@@ -501,7 +498,7 @@ export default function HomePage() {
                     <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col">
                       <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit mb-4">
                         <FiMapPin className="w-3 h-3 text-[var(--accent-primary)]" />
-                        <span className="text-xs font-mono text-white tracking-wider">Earth, Global</span>
+                        <span className="text-xs font-mono text-white tracking-wider">{settings.location || 'Jakarta, Indonesia'}</span>
                       </span>
                       <h4 className="text-3xl font-display font-medium text-white shadow-sm mb-1">{settings.full_name || t('hero.name')}</h4>
                       <p className="text-[var(--accent-primary)] font-medium font-mono text-sm uppercase tracking-widest">{settings.title || t('hero.title')}</p>

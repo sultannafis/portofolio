@@ -56,13 +56,13 @@ export default function DashboardPage() {
           return (
             <motion.div key={card.label} variants={fadeIn} className="premium-card p-6 flex flex-col justify-between group overflow-hidden relative">
               <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--accent-primary)] opacity-[0.03] blur-[40px] pointer-events-none group-hover:opacity-[0.1] transition-opacity duration-500" />
-              
+
               <div className="flex items-start justify-between mb-8 relative z-10">
                 <div className="w-12 h-12 rounded-2xl bg-[var(--bg-muted)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] group-hover:text-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] transition-all duration-300">
                   <Icon className="w-5 h-5" />
                 </div>
               </div>
-              
+
               {loading ? (
                 <div className="space-y-2 mt-auto relative z-10">
                   <div className="skeleton h-8 w-16" />
@@ -83,7 +83,7 @@ export default function DashboardPage() {
       <div className="premium-card p-8 md:p-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)]/50 to-transparent pointer-events-none" />
         <h2 className="font-display text-xl font-medium mb-8 text-[var(--text-primary)] relative z-10">{t('admin.traffic_analytics')}</h2>
-        
+
         {loading ? (
           <div className="skeleton h-72 w-full relative z-10" />
         ) : stats?.daily_stats && stats.daily_stats.length > 0 ? (
