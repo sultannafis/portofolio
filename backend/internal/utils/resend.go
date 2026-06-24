@@ -38,52 +38,75 @@ func SendContactNotification(name, email, subject, message string) {
 
 	htmlBody := fmt.Sprintf(`
 		<!DOCTYPE html>
-		<html>
+		<html lang="id">
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="color-scheme" content="light dark">
+			<meta name="supported-color-schemes" content="light dark">
+			<style>
+				:root { color-scheme: light dark; supported-color-schemes: light dark; }
+				body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+				.card { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+				@media (prefers-color-scheme: dark) {
+					.bg-main { background-color: #0f172a !important; }
+					.card { background-color: #1e293b !important; border-color: #334155 !important; }
+					.text-main { color: #f8fafc !important; }
+					.text-muted { color: #94a3b8 !important; }
+					.box-bg { background-color: #334155 !important; border-color: #475569 !important; }
+					.border-b { border-bottom-color: #334155 !important; }
+					.footer-bg { background-color: #0f172a !important; border-top-color: #1e293b !important; }
+				}
+				@media screen and (max-width: 600px) {
+					.p-mob { padding: 30px 20px !important; }
+				}
+			</style>
 		</head>
-		<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-			<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="padding: 40px 20px;">
+		<body class="bg-main" style="background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
+			<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="padding: 30px 15px;">
 				<tr>
 					<td align="center">
-						<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;">
+						<table width="100%%" border="0" cellpadding="0" cellspacing="0" class="card" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
 							<tr>
-								<td style="background-color: #0ea5e9; padding: 30px 40px; text-align: center;">
-									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio - Sultan Nafis</h2>
+								<td style="background-color: #0ea5e9; padding: 25px 20px; text-align: center;">
+									<h2 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 600;">Portfolio - Sultan Nafis</h2>
 								</td>
 							</tr>
 							<tr>
-								<td style="padding: 40px;">
-									<p style="margin: 0 0 20px 0; color: #334155; font-size: 16px; line-height: 1.6;">You have received a new contact message from your portfolio.</p>
-									<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 25px;">
+								<td class="p-mob" style="padding: 40px 30px;">
+									<p class="text-main" style="margin: 0 0 25px 0; color: #0f172a; font-size: 16px; line-height: 1.6; text-align: center;">Anda telah menerima pesan kontak baru dari portofolio Anda.</p>
+									<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
 										<tr>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px; width: 80px;"><strong>Name:</strong></td>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px;">%s</td>
+											<td class="border-b text-muted" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 14px; width: 80px;"><strong>Nama:</strong></td>
+											<td class="border-b text-main" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 14px;"><strong>%s</strong></td>
 										</tr>
 										<tr>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;"><strong>Email:</strong></td>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #0ea5e9; font-size: 14px;">%s</td>
+											<td class="border-b text-muted" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 14px;"><strong>Email:</strong></td>
+											<td class="border-b text-main" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #0ea5e9; font-size: 14px;"><strong>%s</strong></td>
 										</tr>
 										<tr>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;"><strong>Subject:</strong></td>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px;">%s</td>
+											<td class="border-b text-muted" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 14px;"><strong>Subjek:</strong></td>
+											<td class="border-b text-main" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 14px;"><strong>%s</strong></td>
 										</tr>
 										<tr>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;"><strong>Date:</strong></td>
-											<td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px;">%s</td>
+											<td class="border-b text-muted" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 14px;"><strong>Tanggal:</strong></td>
+											<td class="border-b text-main" style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 14px;"><strong>%s</strong></td>
 										</tr>
 									</table>
 									
-									<h3 style="margin: 0 0 15px 0; color: #334155; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Message:</h3>
-									<div style="background-color: #f8fafc; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-										<p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.7; white-space: pre-wrap;">%s</p>
-									</div>
+									<h3 class="text-main" style="margin: 0 0 10px 0; color: #0f172a; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Pesan:</h3>
+									<table width="100%%" border="0" cellpadding="0" cellspacing="0" class="box-bg" style="background-color: #f1f5f9; border-left: 4px solid #0ea5e9; border-radius: 4px;">
+										<tr>
+											<td style="padding: 20px;">
+												<p class="text-main" style="margin: 0; color: #334155; font-size: 15px; line-height: 1.7; white-space: pre-wrap;">%s</p>
+											</td>
+										</tr>
+									</table>
 								</td>
 							</tr>
 							<tr>
-								<td style="background-color: #f8fafc; padding: 25px 40px; text-align: center; border-top: 1px solid #f1f5f9;">
-									<p style="margin: 0; color: #94a3b8; font-size: 13px;">This email was sent securely via your Portfolio Contact Form.</p>
+								<td class="footer-bg" style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+									<p class="text-muted" style="margin: 0; color: #64748b; font-size: 12px; text-align: center;">Email ini dikirim secara aman melalui Formulir Kontak Portofolio Anda.</p>
 								</td>
 							</tr>
 						</table>
@@ -158,40 +181,72 @@ func SendOTPEmail(toEmail, subject, title, otp, purposeText string) error {
 
 	htmlBody := fmt.Sprintf(`
 		<!DOCTYPE html>
-		<html>
+		<html lang="id">
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="color-scheme" content="light dark">
+			<meta name="supported-color-schemes" content="light dark">
+			<style>
+				:root { color-scheme: light dark; supported-color-schemes: light dark; }
+				body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+				.card { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+				@media (prefers-color-scheme: dark) {
+					.bg-main { background-color: #0f172a !important; }
+					.card { background-color: #1e293b !important; border-color: #334155 !important; }
+					.text-main { color: #f8fafc !important; }
+					.text-muted { color: #94a3b8 !important; }
+					.box-bg { background-color: #334155 !important; border-color: #475569 !important; }
+					.warn-bg { background-color: #451a03 !important; border-left-color: #f59e0b !important; }
+					.warn-text { color: #fde68a !important; }
+					.footer-bg { background-color: #0f172a !important; border-top-color: #1e293b !important; }
+				}
+				@media screen and (max-width: 600px) {
+					.p-mob { padding: 30px 20px !important; }
+					.title-mob { font-size: 20px !important; }
+					.otp-mob { font-size: 32px !important; letter-spacing: 6px !important; }
+				}
+			</style>
 		</head>
-		<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-			<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="padding: 40px 20px;">
+		<body class="bg-main" style="background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
+			<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="padding: 30px 15px;">
 				<tr>
 					<td align="center">
-						<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;">
+						<table width="100%%" border="0" cellpadding="0" cellspacing="0" class="card" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
 							<tr>
-								<td style="background-color: #0ea5e9; padding: 30px 40px; text-align: center;">
-									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio - Sultan Nafis</h2>
+								<td style="background-color: #0ea5e9; padding: 25px 20px; text-align: center;">
+									<h2 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 600;">Portfolio - Sultan Nafis</h2>
 								</td>
 							</tr>
 							<tr>
-								<td style="padding: 50px 40px; text-align: center;">
-									<h3 style="margin: 0 0 20px 0; color: #0f172a; font-size: 20px;">%s</h3>
-									<p style="margin: 0 0 35px 0; color: #64748b; font-size: 15px; line-height: 1.6;">
+								<td class="p-mob" style="padding: 40px 30px; text-align: center;">
+									<h3 class="text-main title-mob" style="margin: 0 0 15px 0; color: #0f172a; font-size: 20px; text-align: center;">%s</h3>
+									<p class="text-muted" style="margin: 0 0 25px 0; color: #475569; font-size: 15px; line-height: 1.6; text-align: center;">
 										%s
 									</p>
-									<div style="background-color: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px 30px; display: inline-block; margin-bottom: 35px;">
-										<h1 style="margin: 0; color: #0ea5e9; font-size: 36px; font-family: monospace; letter-spacing: 8px; font-weight: 700;">%s</h1>
-									</div>
-									<div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; text-align: left; border-radius: 4px;">
-										<p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5;">
-											<strong>Security Warning:</strong> This code is valid for <strong>5 minutes</strong>. Do not share this code with anyone. If you didn't request this code, please secure your account.
-										</p>
-									</div>
+									<center>
+										<table border="0" cellpadding="0" cellspacing="0" class="box-bg" style="background-color: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 8px; margin-bottom: 30px;">
+											<tr>
+												<td style="padding: 15px 25px;">
+													<h1 class="otp-mob" style="margin: 0; color: #0ea5e9; font-size: 38px; font-family: ui-monospace, 'Courier New', monospace; letter-spacing: 8px; font-weight: 700; text-align: center;">%s</h1>
+												</td>
+											</tr>
+										</table>
+									</center>
+									<table width="100%%" border="0" cellpadding="0" cellspacing="0" class="warn-bg" style="background-color: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px;">
+										<tr>
+											<td style="padding: 15px;">
+												<p class="warn-text" style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5; text-align: left;">
+													<strong>Peringatan Keamanan:</strong> Kode ini berlaku selama <strong>5 menit</strong>. Jangan bagikan kode ini kepada siapa pun. Jika Anda tidak meminta kode ini, harap amankan akun Anda.
+												</p>
+											</td>
+										</tr>
+									</table>
 								</td>
 							</tr>
 							<tr>
-								<td style="background-color: #f8fafc; padding: 25px 40px; text-align: center; border-top: 1px solid #f1f5f9;">
-									<p style="margin: 0; color: #94a3b8; font-size: 12px;">This is an automated message. Please do not reply directly to this email.</p>
+								<td class="footer-bg" style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+									<p class="text-muted" style="margin: 0; color: #64748b; font-size: 12px; text-align: center;">Ini adalah pesan otomatis. Mohon tidak membalas email ini secara langsung.</p>
 								</td>
 							</tr>
 						</table>

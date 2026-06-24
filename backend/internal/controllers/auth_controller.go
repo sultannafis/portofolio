@@ -69,7 +69,7 @@ func (ctrl *AuthController) Login(c *fiber.Ctx) error {
 			return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Gagal mengirim kode OTP. Silakan coba lagi nanti.")
 		}
 
-		err = utils.SendOTPEmail(user.Email, "Login OTP Code", "Admin Authentication Code", rawOTP, "A request was made to authenticate your admin session. Use the One-Time Password (OTP) below to proceed.")
+		err = utils.SendOTPEmail(user.Email, "Kode OTP Login Admin", "Kode Otentikasi Admin", rawOTP, "Permintaan telah diajukan untuk mengautentikasi sesi admin Anda. Gunakan Kata Sandi Sekali Pakai (OTP) di bawah ini untuk melanjutkan.")
 		if err != nil {
 			log.Printf("[Resend Error] Synchronous email delivery failed: %v\n", err)
 			_ = ctrl.otpRepo.DeleteOTP(pendingLoginId) 
@@ -184,7 +184,7 @@ func (ctrl *AuthController) RequestProfileOTP(c *fiber.Ctx) error {
 		return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Gagal mengirim kode OTP")
 	}
 
-	err = utils.SendOTPEmail(user.Email, "Account Update OTP Code", "Account Change Request", rawOTP, "A request was made to update your account details. Use the One-Time Password (OTP) below to verify this action.")
+	err = utils.SendOTPEmail(user.Email, "Kode OTP Pembaruan Akun", "Permintaan Perubahan Akun", rawOTP, "Permintaan telah diajukan untuk memperbarui detail akun Anda. Gunakan Kata Sandi Sekali Pakai (OTP) di bawah ini untuk memverifikasi tindakan ini.")
 	if err != nil {
 		_ = ctrl.otpRepo.DeleteOTP(pendingID)
 		return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Gagal mengirim email OTP")
@@ -362,7 +362,7 @@ func (ctrl *AuthController) ResendOTP(c *fiber.Ctx) error {
 		return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Gagal mengirim kode OTP. Silakan coba lagi nanti.")
 	}
 
-	err = utils.SendOTPEmail(user.Email, "Login OTP Code", "Admin Authentication Code", rawOTP, "A request was made to authenticate your admin session. Use the One-Time Password (OTP) below to proceed.")
+	err = utils.SendOTPEmail(user.Email, "Kode OTP Login Admin", "Kode Otentikasi Admin", rawOTP, "Permintaan telah diajukan untuk mengautentikasi sesi admin Anda. Gunakan Kata Sandi Sekali Pakai (OTP) di bawah ini untuk melanjutkan.")
 	if err != nil {
 		log.Printf("[OTP Resend Error] Failed to send email: %v\n", err)
 		_ = ctrl.otpRepo.DeleteOTP(newPendingLoginId)
