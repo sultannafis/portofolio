@@ -50,7 +50,7 @@ func SendContactNotification(name, email, subject, message string) {
 						<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;">
 							<tr>
 								<td style="background-color: #0ea5e9; padding: 30px 40px; text-align: center;">
-									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio / Sultan Nafis</h2>
+									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio - Sultan Nafis</h2>
 								</td>
 							</tr>
 							<tr>
@@ -119,7 +119,7 @@ func SendContactNotification(name, email, subject, message string) {
 
 	// Create client with timeout
 	client := &http.Client{Timeout: 10 * time.Second}
-	
+
 	// Execute the HTTP request asynchronously to avoid blocking the API response
 	go func() {
 		resp, err := client.Do(req)
@@ -138,7 +138,7 @@ func SendContactNotification(name, email, subject, message string) {
 	}()
 }
 
-// SendOTPEmail sends an OTP code synchronously. 
+// SendOTPEmail sends an OTP code synchronously.
 // It returns an error if sending fails, allowing the caller to decide the next steps.
 func SendOTPEmail(toEmail, subject, title, otp, purposeText string) error {
 	apiKey := os.Getenv("RESEND_API_KEY")
@@ -170,7 +170,7 @@ func SendOTPEmail(toEmail, subject, title, otp, purposeText string) error {
 						<table width="100%%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;">
 							<tr>
 								<td style="background-color: #0ea5e9; padding: 30px 40px; text-align: center;">
-									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio / Sultan Nafis</h2>
+									<h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Portfolio - Sultan Nafis</h2>
 								</td>
 							</tr>
 							<tr>
