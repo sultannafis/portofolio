@@ -2,16 +2,17 @@
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect, useState } from 'react';
-import { settingsAPI, authAPI } from '@/lib/api';
+import { settingsAPI, authAPI, securityAPI } from '@/lib/api';
 import { useThemeStore, useAuthStore } from '@/store';
 import toast from 'react-hot-toast';
-import { FiSave, FiSettings, FiSun, FiMoon, FiGlobe, FiUser, FiCode, FiImage, FiX, FiUpload, FiFileText, FiLink, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiSave, FiSettings, FiSun, FiMoon, FiGlobe, FiUser, FiCode, FiImage, FiX, FiUpload, FiFileText, FiLink, FiEye, FiEyeOff, FiShield } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'account' | 'profile' | 'site' | 'social'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'profile' | 'site' | 'social' | 'security'>('account');
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [securitySettings, setSecuritySettings] = useState<Record<string, boolean>>({});
   const [accountForm, setAccountForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,6 +21,10 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingCV, setUploadingCV] = useState(false);
+
+  const [otpModal, setOtpModal] = useState({ isOpen: false, type: '', settingKey: '', newValue: false, pendingId: '', emailMask: '' });
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
   
   const { theme, setTheme } = useThemeStore();
   const { user, me } = useAuthStore();
@@ -40,8 +45,12 @@ export default function SettingsPage() {
 
   async function fetchData() {
     try {
-      const res = await settingsAPI.getAll();
+      const [res, secRes] = await Promise.all([
+        settingsAPI.getAll(),
+        securityAPI.getAdminSettings()
+      ]);
       setSettings(res.data?.data || {});
+      setSecuritySettings(secRes.data?.data || {});
     } catch { /* */ }
     setLoading(false);
   }
@@ -66,28 +75,80 @@ export default function SettingsPage() {
     }
     setSaving(true);
     try {
-      const dataToUpdate: Record<string, string> = {
-        username: accountForm.username,
-        email: accountForm.email,
-      };
-      if (accountForm.password.trim() !== '') {
-        dataToUpdate.password = accountForm.password;
-      }
+      const dataToUpdate: Record<string, string> = {};
+      if (accountForm.username.trim() !== '') dataToUpdate.username = accountForm.username;
+      if (accountForm.email.trim() !== '') dataToUpdate.email = accountForm.email;
+      if (accountForm.password.trim() !== '') dataToUpdate.password = accountForm.password;
       
-      await authAPI.updateProfile(dataToUpdate);
-      toast.success('Account updated successfully!');
-      if (accountForm.password.trim() !== '') {
-         setAccountForm((prev) => ({ ...prev, password: '', confirmPassword: '' })); // clear password
+      const res = await authAPI.requestAccountOTP(dataToUpdate);
+      if (res.data?.data?.requiresOtp || res.data?.requiresOtp) {
+          const payloadData = res.data?.data || res.data;
+          setOtpModal({ isOpen: true, type: 'account', settingKey: '', newValue: false, pendingId: payloadData.pendingId, emailMask: payloadData.maskedEmail });
       }
-      await me(); // refresh user store
-    } catch { 
-      toast.error('Failed to update account'); 
+    } catch (err: any) { 
+      toast.error(err.response?.data?.error || err.response?.data?.message || 'Failed to update account'); 
     }
     setSaving(false);
   }
 
   function updateSetting(key: string, value: string) {
     setSettings(prev => ({ ...prev, [key]: value }));
+  }
+
+  async function handleSecurityToggle(key: string, currentVal: boolean) {
+    const newVal = !currentVal;
+    
+    const protectedSettings = [
+      'security_turnstile_enabled', 
+      'security_rate_limit_enabled', 
+      'security_visitor_protection_enabled', 
+      'security_login_otp_enabled'
+    ];
+    
+    if (protectedSettings.includes(key)) {
+      setSaving(true);
+      try {
+        const res = await securityAPI.requestOTP(key, newVal);
+        setOtpModal({ isOpen: true, type: 'security', settingKey: key, newValue: newVal, pendingId: '', emailMask: res.data?.maskedEmail || '' });
+      } catch (e: any) {
+        toast.error(e.response?.data?.error || 'Failed to request OTP');
+      }
+      setSaving(false);
+    } else {
+      setSaving(true);
+      try {
+        await securityAPI.updateSetting(key, newVal);
+        setSecuritySettings(prev => ({ ...prev, [key]: newVal }));
+        toast.success(t('admin.security.setting_updated') || 'Setting updated successfully');
+      } catch (e: any) {
+        toast.error(e.response?.data?.error || 'Failed to update setting');
+      }
+      setSaving(false);
+    }
+  }
+
+  async function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setOtpLoading(true);
+    try {
+       if (otpModal.type === 'account') {
+         await authAPI.verifyAccountOTP(otpModal.pendingId, otpCode);
+         toast.success('Account updated successfully!');
+         if (accountForm.password.trim() !== '') {
+            setAccountForm((prev) => ({ ...prev, password: '', confirmPassword: '' }));
+         }
+         await me();
+       } else {
+         await securityAPI.verifyOTP(otpModal.settingKey, otpModal.newValue, otpCode);
+         setSecuritySettings(prev => ({ ...prev, [otpModal.settingKey]: otpModal.newValue }));
+         toast.success(t('admin.security.setting_updated') || 'Setting updated successfully');
+       }
+       setOtpModal({ isOpen: false, type: '', settingKey: '', newValue: false, pendingId: '', emailMask: '' });
+       setOtpCode('');
+    } catch(e: any) {
+       toast.error(e.response?.data?.error || e.response?.data?.message || 'Invalid or expired OTP');
+    }
+    setOtpLoading(false);
   }
 
   const profileDropzone = useDropzone({
@@ -153,16 +214,17 @@ export default function SettingsPage() {
   }
 
   const tabs = [
-    { id: 'account', label: 'Account', icon: FiUser },
-    { id: 'profile', label: 'Public Profile', icon: FiCode },
-    { id: 'social', label: 'Social & links', icon: FiGlobe },
-    { id: 'site', label: 'Site Config', icon: FiSettings },
+    { id: 'account', label: t('admin.settings_page.tabs.account') || 'Account', icon: FiUser },
+    { id: 'profile', label: t('admin.settings_page.tabs.profile') || 'Public Profile', icon: FiCode },
+    { id: 'social', label: t('admin.settings_page.tabs.social') || 'Social & links', icon: FiGlobe },
+    { id: 'site', label: t('admin.settings_page.tabs.site') || 'Site Config', icon: FiSettings },
+    { id: 'security', label: t('admin.security.title') || 'Security', icon: FiShield },
   ] as const;
 
   return (
     <div className="space-y-8 max-w-4xl">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-3xl font-display font-medium tracking-tight">{t('admin.settings')}</h1><p className="text-[var(--text-secondary)] text-sm mt-1 font-light">Manage your account and public portfolio details</p></div>
+        <div><h1 className="text-3xl font-display font-medium tracking-tight">{t('admin.settings')}</h1><p className="text-[var(--text-secondary)] text-sm mt-1 font-light">{t('admin.settings_page.desc') || 'Manage your account and public portfolio details'}</p></div>
       </div>
 
       {/* Tab Navigation */}
@@ -180,7 +242,7 @@ export default function SettingsPage() {
         {/* --- ACCOUNT TAB --- */}
         {activeTab === 'account' && (
           <form onSubmit={handleSaveAccount} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div><h3 className="font-display font-medium text-xl">Admin Account</h3><p className="text-sm text-[var(--text-secondary)] mt-1 font-light">Credentials used to log into the dashboard</p></div>
+            <div><h3 className="font-display font-medium text-xl">{t('admin.settings_page.account_title') || 'Admin Account'}</h3><p className="text-sm text-[var(--text-secondary)] mt-1 font-light">{t('admin.settings_page.account_desc') || 'Credentials used to log into the dashboard'}</p></div>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="text-sm font-medium mb-1 block">Username</label>
@@ -195,7 +257,7 @@ export default function SettingsPage() {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="text-sm font-medium mb-1 block">Change Password <span className="text-xs text-[var(--text-tertiary)] font-light">(Leave blank to keep current)</span></label>
+                <label className="text-sm font-medium mb-1 block">{t('admin.settings_page.change_password') || 'Change Password'} <span className="text-xs text-[var(--text-tertiary)] font-light">{t('admin.settings_page.change_password_hint') || '(Leave blank to keep current)'}</span></label>
                 <div className="relative">
                   <input type={showPassword ? 'text' : 'password'} value={accountForm.password} onChange={(e) => setAccountForm({ ...accountForm, password: e.target.value })}
                     className="input-field pr-10" placeholder="New password" minLength={6} />
@@ -205,7 +267,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Confirm Password</label>
+                <label className="text-sm font-medium mb-1 block">{t('admin.settings_page.confirm_password') || 'Confirm Password'}</label>
                 <div className="relative">
                   <input type={showConfirmPassword ? 'text' : 'password'} value={accountForm.confirmPassword} onChange={(e) => setAccountForm({ ...accountForm, confirmPassword: e.target.value })}
                     className="input-field pr-10" placeholder="Confirm new password" minLength={6} />
@@ -218,7 +280,7 @@ export default function SettingsPage() {
             <div className="pt-4 border-t border-[var(--border-subtle)]">
               <button type="submit" disabled={saving} className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
                 {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FiSave className="w-4 h-4" />}
-                {saving ? 'Saving...' : 'Update Account'}
+                {saving ? (t('common.loading') || 'Saving...') : (t('admin.settings_page.update_account') || 'Update Account')}
               </button>
             </div>
           </form>
@@ -461,7 +523,100 @@ export default function SettingsPage() {
           </form>
         )}
 
+        {/* --- SECURITY TAB --- */}
+        {activeTab === 'security' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div>
+              <h3 className="font-display font-medium text-xl">{t('admin.security.title') || 'Security Settings'}</h3>
+              <p className="text-sm text-[var(--text-secondary)] mt-1 font-light">{t('admin.security.subtitle') || 'Manage active protections'}</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                { 
+                  id: 'security_turnstile_enabled', 
+                  label: t('admin.security.turnstile') || 'Turnstile Protection', 
+                  desc: t('admin.security.turnstile_desc') || 'Prevent bot spam', 
+                  active: !!securitySettings.security_turnstile_enabled 
+                },
+                { 
+                  id: 'security_rate_limit_enabled', 
+                  label: t('admin.security.redis') || 'Redis Rate Limit', 
+                  desc: t('admin.security.redis_desc') || 'Limit API requests', 
+                  active: !!securitySettings.security_rate_limit_enabled 
+                },
+                { 
+                  id: 'security_visitor_protection_enabled', 
+                  label: t('admin.security.visitor') || 'Visitor Protection', 
+                  desc: t('admin.security.visitor_desc') || 'Track genuine traffic', 
+                  active: !!securitySettings.security_visitor_protection_enabled 
+                },
+                { 
+                  id: 'security_exclude_admin_visits_enabled', 
+                  label: t('admin.security.exclude_admin') || 'Exclude Admin Visits', 
+                  desc: t('admin.security.exclude_admin_desc') || 'Ignore own stat points', 
+                  active: !!securitySettings.security_exclude_admin_visits_enabled 
+                },
+                { 
+                  id: 'security_resend_email_enabled', 
+                  label: t('admin.security.resend') || 'Resend Email Notification', 
+                  desc: t('admin.security.resend_desc') || 'Inbox routing', 
+                  active: !!securitySettings.security_resend_email_enabled 
+                },
+                { 
+                  id: 'security_login_otp_enabled', 
+                  label: t('admin.security.login_otp') || 'Login Email OTP', 
+                  desc: t('admin.security.login_otp_desc') || 'Require code sent to email', 
+                  active: !!securitySettings.security_login_otp_enabled 
+                },
+              ].map((item) => (
+                <div key={item.id} 
+                  onClick={() => handleSecurityToggle(item.id, item.active)} 
+                  className={`flex items-center justify-between p-4 rounded-xl border transition-colors cursor-pointer group ${saving ? 'opacity-50 pointer-events-none' : 'border-[var(--border-subtle)] hover:border-[var(--accent-primary)] bg-[var(--bg-muted)]'}`}>
+                  <div>
+                    <h4 className="text-sm font-medium text-[var(--text-primary)]">{item.label}</h4>
+                    <p className="text-xs text-[var(--text-tertiary)] mt-1">{item.desc}</p>
+                  </div>
+                  <div className={`w-10 h-6 shrink-0 rounded-full transition-colors flex items-center px-1 ${item.active ? 'bg-green-500/80 shadow-sm shadow-green-500/20' : 'bg-gray-300 dark:bg-gray-700'}`}>
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${item.active ? 'translate-x-4' : 'translate-x-0'}`} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
+
+      {/* OTP Modal */}
+      {otpModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] w-full max-w-sm rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="font-display font-medium text-xl mb-2">{t('admin.security.otp_confirmation') || 'OTP Confirmation'}</h3>
+            <p className="text-sm text-[var(--text-secondary)] mb-6">
+              {t('admin.security.otp_desc_sent') || 'Code sent to email'}: <span className="font-medium text-[var(--text-primary)]">{otpModal.emailMask}</span>
+            </p>
+            
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div>
+                <input type="text" value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="input-field text-center text-lg tracking-[0.5em] font-mono" placeholder="------" required minLength={6} maxLength={6} disabled={otpLoading} autoFocus />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setOtpModal({ isOpen: false, type: '', settingKey: '', newValue: false, pendingId: '', emailMask: '' })} disabled={otpLoading}
+                  className="flex-1 btn-secondary text-sm h-10">
+                  {t('common.cancel') || 'Cancel'}
+                </button>
+                <button type="submit" disabled={otpLoading || otpCode.length < 6}
+                  className="flex-1 btn-primary text-sm h-10 flex items-center justify-center gap-2">
+                  {otpLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                  {t('admin.security.verify_otp') || 'Verify OTP'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

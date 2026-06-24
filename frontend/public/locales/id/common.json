@@ -78,6 +78,7 @@
   },
   "common": {
     "loading": "Memuat",
+    "preparing_data": "Menyiapkan data...",
     "error": "Gagal",
     "success": "Berhasil",
     "no_data": "Tidak ada data ditemukan",
@@ -158,6 +159,27 @@
     "create_skill": "Buat Keahlian",
     "create_certificate": "Buat Sertifikat",
     "create_experience": "Buat Pengalaman",
+    "security": {
+      "title": "Pengaturan Keamanan",
+      "subtitle": "Kelola perlindungan aktif",
+      "turnstile": "Cloudflare Turnstile",
+      "turnstile_desc": "Cegah spam bot pada formulir",
+      "redis": "Pembatasan Akses (Rate Limit)",
+      "redis_desc": "Batasi permintaan API berlebih",
+      "visitor": "Proteksi Pengunjung",
+      "visitor_desc": "Lacak dan hash lalu lintas asli",
+      "exclude_admin": "Kecualikan Akses Admin",
+      "exclude_admin_desc": "Mencegah akses sendiri agar tidak merusak statistik",
+      "resend": "Notifikasi Email",
+      "resend_desc": "Beri tahu admin di kotak masuk pesan",
+      "login_otp": "Login OTP (2FA)",
+      "login_otp_desc": "Wajibkan kode dari email saat login",
+      "coming_soon": "Hadir di Fase 9",
+      "setting_updated": "Pengaturan berhasil diperbarui",
+      "otp_confirmation": "Konfirmasi OTP",
+      "otp_desc_sent": "Kode dikirim ke email",
+      "verify_otp": "Verifikasi OTP"
+    },
     "form": {
       "title": "Judul",
       "description": "Deskripsi",
@@ -201,6 +223,34 @@
       "deleted": "Berhasil dihapus!",
       "failed": "Aksi gagal. Silakan coba lagi.",
       "fetch_failed": "Gagal mengambil data"
+    },
+    "settings_page": {
+      "desc": "Kelola akun dan detail portofolio publik Anda",
+      "tabs": {
+        "account": "Akun",
+        "profile": "Profil Publik",
+        "social": "Sosial & Tautan",
+        "site": "Konfigurasi Situs"
+      },
+      "account_title": "Akun Admin",
+      "account_desc": "Kredensial untuk masuk ke dashboard",
+      "change_password": "Ubah Password",
+      "change_password_hint": "(Kosongkan jika tidak ingin mengubah)",
+      "confirm_password": "Konfirmasi Password",
+      "update_account": "Perbarui Akun",
+      "profile_title": "Profil Publik",
+      "profile_desc": "Bagaimana Anda terlihat di portofolio utama",
+      "profile_photo": "Foto Profil (Bagian Tentang)",
+      "save_profile": "Simpan Detail Profil",
+      "social_title": "Sosial & Tautan",
+      "social_desc": "Jejak eksternal yang ditampilkan di header dan footer",
+      "resume_title": "CV / Resume",
+      "resume_desc": "Upload PDF atau tempel URL langsung. Akan muncul sebagai tombol \"Download CV\" di portofolio.",
+      "save_links": "Simpan Tautan",
+      "site_title": "Pengaturan Situs",
+      "site_desc": "Preferensi fungsionalitas sistem",
+      "theme_pref": "Preferensi Tema (Panel Admin)",
+      "save_site": "Simpan Konfigurasi Situs"
     }
   },
   "login": {
@@ -212,6 +262,12 @@
     "enter_credentials": "Masukkan kredensial Anda untuk melanjutkan.",
     "username": "Username",
     "password": "Password",
-    "sign_in": "Masuk ke Dashboard"
+    "sign_in": "Masuk ke Dashboard",
+    "verify_otp_title": "Autentikasi Dua Faktor",
+    "verify_otp_desc": "Masukkan 6 digit kode OTP yang dikirim ke ",
+    "otp_code": "Kode OTP",
+    "verify_btn": "Verifikasi & Masuk",
+    "resend_otp": "Kirim Ulang OTP",
+    "resend_wait": "Tunggu "
   }
 }

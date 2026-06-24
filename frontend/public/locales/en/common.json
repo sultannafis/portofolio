@@ -78,6 +78,7 @@
   },
   "common": {
     "loading": "Loading",
+    "preparing_data": "Preparing data...",
     "error": "Error",
     "success": "Success",
     "no_data": "No data found",
@@ -158,6 +159,27 @@
     "create_skill": "Create Skill",
     "create_certificate": "Create Certificate",
     "create_experience": "Create Experience",
+    "security": {
+      "title": "Security Settings",
+      "subtitle": "Manage active protections",
+      "turnstile": "Cloudflare Turnstile",
+      "turnstile_desc": "Prevent bot spam on forms",
+      "redis": "Rate Limiting",
+      "redis_desc": "Limit excessive API requests",
+      "visitor": "Visitor Protection",
+      "visitor_desc": "Track and hash genuine traffic",
+      "exclude_admin": "Exclude Admin Visits",
+      "exclude_admin_desc": "Prevent own visits from inflating stats",
+      "resend": "Email Notifications",
+      "resend_desc": "Notify admin on message inbox",
+      "login_otp": "Login OTP (2FA)",
+      "login_otp_desc": "Require code sent to email to login",
+      "coming_soon": "Coming in Phase 9",
+      "setting_updated": "Setting updated successfully",
+      "otp_confirmation": "OTP Confirmation",
+      "otp_desc_sent": "Code sent to email",
+      "verify_otp": "Verify OTP"
+    },
     "form": {
       "title": "Title",
       "description": "Description",
@@ -201,6 +223,34 @@
       "deleted": "Deleted successfully!",
       "failed": "Action failed. Please try again.",
       "fetch_failed": "Failed to fetch data"
+    },
+    "settings_page": {
+      "desc": "Manage your account and public portfolio details",
+      "tabs": {
+        "account": "Account",
+        "profile": "Public Profile",
+        "social": "Social & Links",
+        "site": "Site Config"
+      },
+      "account_title": "Admin Account",
+      "account_desc": "Credentials used to log into the dashboard",
+      "change_password": "Change Password",
+      "change_password_hint": "(Leave blank to keep current)",
+      "confirm_password": "Confirm Password",
+      "update_account": "Update Account",
+      "profile_title": "Public Profile",
+      "profile_desc": "How you appear on the main portfolio",
+      "profile_photo": "Profile Photo (About Section)",
+      "save_profile": "Save Profile Details",
+      "social_title": "Social & Links",
+      "social_desc": "External footprints shown in header and footer",
+      "resume_title": "CV / Resume",
+      "resume_desc": "Upload a PDF or paste a direct URL. This will be shown as a \"Download CV\" button on the portfolio.",
+      "save_links": "Save Links",
+      "site_title": "Site Settings",
+      "site_desc": "System functionality preferences",
+      "theme_pref": "Theme Preference (Admin Panel)",
+      "save_site": "Save Site Config"
     }
   },
   "login": {
@@ -212,6 +262,12 @@
     "enter_credentials": "Enter your credentials to continue.",
     "username": "Username",
     "password": "Password",
-    "sign_in": "Sign In to Dashboard"
+    "sign_in": "Sign In to Dashboard",
+    "verify_otp_title": "Two-Factor Authentication",
+    "verify_otp_desc": "Please enter the 6-digit OTP code sent to ",
+    "otp_code": "OTP Code",
+    "verify_btn": "Verify & Login",
+    "resend_otp": "Resend OTP",
+    "resend_wait": "Wait "
   }
 }

@@ -21,7 +21,7 @@ function flattenTranslations(obj: NestedTranslations, prefix = ''): Record<strin
 }
 
 export function useTranslation() {
-  const { lang, setLang, setTranslations, t } = useLangStore();
+  const { lang, setLang, setTranslations, t, loadLang } = useLangStore();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const loadTranslations = useCallback(async (language: string) => {
@@ -33,8 +33,13 @@ export function useTranslation() {
       setIsLoaded(true);
     } catch (error) {
       console.error('Failed to load translations:', error);
+      setIsLoaded(true);
     }
   }, [setTranslations]);
+
+  useEffect(() => {
+    loadLang();
+  }, [loadLang]);
 
   useEffect(() => {
     loadTranslations(lang);

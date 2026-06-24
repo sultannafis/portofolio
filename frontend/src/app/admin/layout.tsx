@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [unreadCount, setUnreadCount] = useState(0);
   const { pageTitle, setPageTitle } = useUIStore();
   const [loaded, setLoaded] = useState(false);
-  const { t } = useTranslation();
+  const { t, lang, switchLanguage } = useTranslation();
   useWebSocket();
 
   useEffect(() => {
@@ -196,6 +196,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </span>
                 )}
               </Link>
+
+              <button onClick={() => switchLanguage(lang === 'en' ? 'id' : 'en')} className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-all font-mono font-bold text-sm">
+                {lang.toUpperCase()}
+              </button>
 
               <button onClick={toggleTheme} className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-all">
                 {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}

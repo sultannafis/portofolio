@@ -36,6 +36,7 @@ func PaginatedResponse(c *fiber.Ctx, data interface{}, meta *Meta) error {
 func ErrorResponse(c *fiber.Ctx, status int, message string) error {
 	return c.Status(status).JSON(APIResponse{
 		Success: false,
+		Message: message,
 		Error:   message,
 	})
 }

@@ -1,6 +1,11 @@
+'use client';
+
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function PremiumLoader() {
+  const { t } = useTranslation();
+
   return (
     <div suppressHydrationWarning className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[var(--bg-primary)] overflow-hidden">
       {/* Background glow effects */}
@@ -45,7 +50,7 @@ export default function PremiumLoader() {
         {/* Shimmer Text */}
         <div className="relative overflow-hidden w-full text-center">
           <p className="text-sm font-mono uppercase tracking-[0.3em] font-semibold text-[var(--text-tertiary)] bg-clip-text">
-            Menyiapkan data...
+            {t('common.preparing_data')}
             <motion.span
               initial={{ x: '-100%' }}
               animate={{ x: '100%' }}

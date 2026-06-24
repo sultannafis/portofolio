@@ -72,3 +72,8 @@ backend/uploads/*
 # Temporary / generated files
 backend/tmp_app
 frontend/build_output.txt
+
+# =========================
+# Local private docs / AI prompts
+# =========================
+docs/

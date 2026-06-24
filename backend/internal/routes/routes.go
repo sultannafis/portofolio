@@ -20,6 +20,7 @@ func SetupRoutes(app *fiber.App, hub *ws.Hub, cld *services.CloudinaryService) {
 	settingCtrl := controllers.NewSettingController(cld)
 	transCtrl := controllers.NewTranslationController()
 	dashCtrl := controllers.NewDashboardController()
+	securityCtrl := controllers.NewSecurityController()
 
 	// WebSocket
 	app.Use("/ws", func(c *fiber.Ctx) error {
@@ -36,6 +37,8 @@ func SetupRoutes(app *fiber.App, hub *ws.Hub, cld *services.CloudinaryService) {
 	// Auth
 	auth := api.Group("/auth")
 	auth.Post("/login", authCtrl.Login)
+	auth.Post("/login/verify-otp", authCtrl.VerifyOTP)
+	auth.Post("/login/resend-otp", authCtrl.ResendOTP)
 
 	// Public endpoints
 	api.Get("/projects", projectCtrl.GetPublished)
@@ -48,13 +51,15 @@ func SetupRoutes(app *fiber.App, hub *ws.Hub, cld *services.CloudinaryService) {
 	api.Get("/analytics/visitors", visitorCtrl.GetStats)
 	api.Get("/settings", settingCtrl.GetAll)
 	api.Get("/translations/:lang", transCtrl.GetByLang)
+	api.Get("/public/security-settings", securityCtrl.GetPublicSecuritySettings)
 
 	// Admin protected routes
 	admin := api.Group("/admin", middleware.AuthMiddleware())
 
 	// Auth protected
 	admin.Get("/me", authCtrl.Me)
-	admin.Put("/profile", authCtrl.UpdateProfile)
+	admin.Post("/account/request-otp", authCtrl.RequestProfileOTP)
+	admin.Post("/account/verify-otp", authCtrl.VerifyProfileOTP)
 
 	// Dashboard
 	admin.Get("/dashboard/stats", dashCtrl.GetStats)
@@ -98,6 +103,12 @@ func SetupRoutes(app *fiber.App, hub *ws.Hub, cld *services.CloudinaryService) {
 	// Settings
 	admin.Put("/settings", settingCtrl.Update)
 	admin.Post("/settings/upload", settingCtrl.UploadProfileImage)
+	
+	// Security Settings
+	admin.Get("/security-settings", securityCtrl.GetAdminSecuritySettings)
+	admin.Post("/security-settings/update", securityCtrl.UpdateSecuritySetting)
+	admin.Post("/security-settings/request-otp", securityCtrl.RequestOTP)
+	admin.Post("/security-settings/verify-otp", securityCtrl.VerifyOTP)
 
 	// Translations
 	admin.Put("/translations", transCtrl.Update)

@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useThemeStore, useLangStore, useRealtimeStore } from '@/store';
-import { projectsAPI, skillsAPI, certificatesAPI, experiencesAPI, messagesAPI, visitorsAPI, settingsAPI } from '@/lib/api';
+import { projectsAPI, skillsAPI, certificatesAPI, experiencesAPI, messagesAPI, visitorsAPI, settingsAPI, securityAPI } from '@/lib/api';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { Project, Skill, Certificate, Experience } from '@/types';
 import toast from 'react-hot-toast';
 import { FiGithub, FiExternalLink, FiSend, FiSun, FiMoon, FiMenu, FiX, FiArrowUp, FiGlobe, FiUsers, FiLinkedin, FiTwitter, FiInstagram, FiMail, FiMapPin, FiCalendar, FiBriefcase, FiArrowRight } from 'react-icons/fi';
@@ -55,6 +56,8 @@ export default function HomePage() {
   const [selectedCert, setSelectedCert] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [activeSection, setActiveSection] = useState('home');
+  const [turnstileEnabled, setTurnstileEnabled] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const { scrollY, scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
@@ -155,16 +158,18 @@ export default function HomePage() {
 
   async function fetchData() {
     try {
-      const [projRes, skillRes, certRes, expRes, setRes] = await Promise.all([
+      const [projRes, skillRes, certRes, expRes, setRes, secRes] = await Promise.all([
         projectsAPI.getPublic(), skillsAPI.getPublic(),
         certificatesAPI.getPublic(), experiencesAPI.getPublic(),
         settingsAPI.getAll(),
+        securityAPI.getPublicSettings().catch(() => ({ data: { turnstileEnabled: false } })),
       ]);
       setProjects(projRes.data?.data || []);
       setSkills(skillRes.data?.data || []);
       setCertificates(certRes.data?.data || []);
       setExperiences(expRes.data?.data || []);
       setSettings(setRes.data?.data || {});
+      setTurnstileEnabled(secRes.data?.turnstileEnabled || false);
     } catch { }
     setLoading(false);
   }
@@ -177,11 +182,13 @@ export default function HomePage() {
     e.preventDefault();
     setSending(true);
     try {
-      await messagesAPI.send(contactForm);
+      await messagesAPI.send({ ...contactForm, turnstileToken });
       toast.success(t('contact.success'));
       setContactForm({ name: '', email: '', subject: '', message: '' });
+      setTurnstileToken('');
     } catch {
       toast.error(t('contact.error'));
+      setTurnstileToken('');
     }
     setSending(false);
   }
@@ -803,7 +810,20 @@ export default function HomePage() {
                     <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-tertiary)] ml-2 mb-2 block">{t('contact.message')}</label>
                     <textarea rows={5} required value={contactForm.message} onChange={(e) => setContactForm(s => ({ ...s, message: e.target.value }))} className="input-field resize-none" placeholder={t('contact.message_placeholder')} />
                   </div>
-                  <button type="submit" disabled={sending} className="btn-primary w-full h-14 mt-4 text-base font-semibold tracking-wide">
+                  
+                  {turnstileEnabled && (
+                    <div className="relative group flex justify-center py-2">
+                       <Turnstile
+                         siteKey={(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string) || "0x4AAAAAADYAaJxXJPhV-n0l"}
+                         onSuccess={(token) => setTurnstileToken(token)}
+                         onError={() => setTurnstileToken('')}
+                         onExpire={() => setTurnstileToken('')}
+                         options={{ theme: theme === 'dark' ? 'dark' : 'light' }}
+                       />
+                    </div>
+                  )}
+
+                  <button type="submit" disabled={sending || (turnstileEnabled && !turnstileToken)} className={`btn-primary w-full h-14 mt-4 text-base font-semibold tracking-wide ${turnstileEnabled && !turnstileToken ? 'opacity-50 cursor-not-allowed' : ''}`}>
                     {sending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <span>{t('contact.send')}</span>}
                   </button>
                 </form>

@@ -43,9 +43,15 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (username: string, password: string) =>
     api.post('/auth/login', { username, password }),
+  verifyLoginOtp: (pendingLoginId: string, otp: string) =>
+    api.post('/auth/login/verify-otp', { pendingLoginId, otp }),
+  resendLoginOtp: (pendingLoginId: string) =>
+    api.post('/auth/login/resend-otp', { pendingLoginId }),
   me: () => api.get('/admin/me'),
-  updateProfile: (data: Record<string, string>) =>
-    api.put('/admin/profile', data),
+  requestAccountOTP: (data: Record<string, string>) =>
+    api.post('/admin/account/request-otp', data),
+  verifyAccountOTP: (pendingId: string, otp: string) =>
+    api.post('/admin/account/verify-otp', { pendingId, otp }),
 };
 
 // Projects
@@ -139,6 +145,18 @@ export const translationsAPI = {
   getByLang: (lang: string) => api.get(`/translations/${lang}`),
   update: (lang: string, translations: Record<string, string>) =>
     api.put('/admin/translations', { lang, translations }),
+};
+
+// Security
+export const securityAPI = {
+  getPublicSettings: () => api.get('/public/security-settings'),
+  getAdminSettings: () => api.get('/admin/security-settings'),
+  updateSetting: (settingKey: string, newValue: boolean) =>
+    api.post('/admin/security-settings/update', { settingKey, newValue }),
+  requestOTP: (settingKey: string, newValue: boolean) =>
+    api.post('/admin/security-settings/request-otp', { settingKey, newValue }),
+  verifyOTP: (settingKey: string, newValue: boolean, otp: string) =>
+    api.post('/admin/security-settings/verify-otp', { settingKey, newValue, otp }),
 };
 
 function getSessionId(): string {

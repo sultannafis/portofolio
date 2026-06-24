@@ -3,6 +3,7 @@ package controllers
 import (
 	"math"
 	"strconv"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -45,13 +46,64 @@ func (ctrl *MessageController) GetAll(c *fiber.Ctx) error {
 }
 
 func (ctrl *MessageController) Create(c *fiber.Ctx) error {
-	var msg models.Message
-	if err := c.BodyParser(&msg); err != nil {
+	type MessagePayload struct {
+		Name           string `json:"name"`
+		Email          string `json:"email"`
+		Subject        string `json:"subject"`
+		Message        string `json:"message"`
+		TurnstileToken string `json:"turnstileToken"`
+	}
+
+	var payload MessagePayload
+	if err := c.BodyParser(&payload); err != nil {
 		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Invalid request body")
 	}
-	if msg.Name == "" || msg.Email == "" || msg.Message == "" {
+
+	if payload.Name == "" || payload.Email == "" || payload.Message == "" {
 		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Name, email, and message are required")
 	}
+
+	// Security Hook: Turnstile Validation
+	secSettings := utils.GetSecuritySettings()
+	if secSettings.TurnstileEnabled {
+		if payload.TurnstileToken == "" {
+			return utils.ErrorResponse(c, fiber.StatusBadRequest, "Verifikasi keamanan gagal. Silakan coba lagi.")
+		}
+		
+		isValid, err := utils.VerifyTurnstile(payload.TurnstileToken, c.IP())
+		if err != nil {
+			log.Printf("[Turnstile Warn] %v\n", err) 
+		}
+		if !isValid {
+			return utils.ErrorResponse(c, fiber.StatusBadRequest, "Verifikasi keamanan gagal. Silakan coba lagi.")
+		}
+	}
+
+	// Security Hook: Rate Limiting
+	if secSettings.RateLimitEnabled {
+		hash := utils.GenerateVisitorHash(c.IP(), c.Get("User-Agent"), "contact")
+		key := "rl:contact:" + hash
+		
+		val, err := utils.RedisIncr(key)
+		if err != nil {
+			log.Printf("[Redis Warn] failed to incr rate limit: %v\n", err)
+		} else {
+			if val == 1 {
+				utils.RedisExpire(key, 600) // 10 minutes TTL
+			}
+			if val > 3 {
+				return utils.ErrorResponse(c, fiber.StatusTooManyRequests, "Terlalu banyak permintaan. Silakan coba lagi nanti.")
+			}
+		}
+	}
+
+	msg := models.Message{
+		Name:    payload.Name,
+		Email:   payload.Email,
+		Subject: payload.Subject,
+		Message: payload.Message,
+	}
+
 	if err := ctrl.msgRepo.Create(&msg); err != nil {
 		return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Failed to send message")
 	}
@@ -63,6 +115,11 @@ func (ctrl *MessageController) Create(c *fiber.Ctx) error {
 			"name":    msg.Name,
 			"subject": msg.Subject,
 		})
+	}
+
+	// Security Hook: Resend Email Notification
+	if secSettings.ResendEmailEnabled {
+		utils.SendContactNotification(msg.Name, msg.Email, msg.Subject, msg.Message)
 	}
 
 	return utils.SuccessResponse(c, msg, "Message sent successfully")

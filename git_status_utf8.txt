@@ -1,0 +1,26 @@
+﻿ M .gitignore
+ M backend/internal/config/config.go
+ M backend/internal/controllers/auth_controller.go
+ M backend/internal/controllers/message_controller.go
+ M backend/internal/controllers/visitor_controller.go
+ M backend/internal/database/migrations.go
+ M backend/internal/middleware/cors.go
+ M backend/internal/routes/routes.go
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/public/locales/en/common.json
+ M frontend/public/locales/id/common.json
+ M frontend/src/app/admin/settings/page.tsx
+ M frontend/src/app/login/page.tsx
+ M frontend/src/app/page.tsx
+ M frontend/src/lib/api.ts
+?? backend/internal/controllers/security_controller.go
+?? backend/internal/models/security_otp.go
+?? backend/internal/repositories/security_otp_repo.go
+?? backend/internal/utils/mask.go
+?? backend/internal/utils/redis.go
+?? backend/internal/utils/resend.go
+?? backend/internal/utils/security.go
+?? backend/internal/utils/turnstile.go
+?? backend/internal/utils/visitor.go
+?? git_status_output.txt
