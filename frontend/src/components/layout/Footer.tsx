@@ -28,7 +28,7 @@ export default function Footer({ settings }: FooterProps) {
           {/* Left - Brand */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <span className="font-display text-lg font-semibold text-[var(--text-primary)] tracking-tight">
-              {settings.full_name || 'Portfolio'}
+              Portofolio
               <span className="text-[var(--accent-primary)]">.</span>
             </span>
             {settings.title && (

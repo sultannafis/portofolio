@@ -9,6 +9,7 @@ import { projectsAPI, settingsAPI } from '@/lib/api';
 import { Project } from '@/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import Footer from '@/components/layout/Footer';
+import PremiumLoader from '@/components/ui/PremiumLoader';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -115,7 +116,8 @@ export default function ProjectDetailPage() {
   }
 
   function navigateToProjects() {
-    router.push('/#projects');
+    sessionStorage.setItem('pendingScroll', 'projects');
+    router.push('/');
   }
 
   const handleBack = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
@@ -124,11 +126,7 @@ export default function ProjectDetailPage() {
   };
 
   if (!isLoaded || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-        <div className="w-12 h-12 rounded-full border-2 border-[var(--border-accent)] border-t-[var(--accent-primary)] animate-spin" />
-      </div>
-    );
+    return <PremiumLoader />;
   }
 
   if (!project) return null;
@@ -147,16 +145,16 @@ export default function ProjectDetailPage() {
       {/* ─── Navbar ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl border-b bg-[var(--surface-glass)]" style={{ borderColor: 'var(--border-subtle)' }}>
         <div className="section-container flex items-center justify-between h-20">
-          <Link href="/#projects" className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer bg-transparent border-none">
+          <button onClick={navigateToProjects} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer bg-transparent border-none">
             <div className="w-10 h-10 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-primary)] group-hover:bg-[var(--accent-primary)] group-hover:text-white group-hover:border-[var(--accent-primary)] flex items-center justify-center transition-all duration-300">
               <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-300" />
             </div>
             <span className="hidden sm:inline">{t('project.back_to_projects')}</span>
-          </Link>
+          </button>
 
           {/* Brand */}
           <a href="/" className="font-display text-lg font-bold tracking-tight text-[var(--text-primary)] hover:opacity-80 transition-opacity">
-            {settings.full_name ? settings.full_name.split(' ')[0] : 'Portfolio'}
+            Portofolio
             <span className="text-[var(--accent-primary)]">.</span>
           </a>
         </div>
@@ -460,11 +458,11 @@ export default function ProjectDetailPage() {
         <section className="section-container max-w-7xl mx-auto px-6 pb-24">
           <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}
             className="flex justify-center">
-            <Link href="/#projects"
+            <button onClick={navigateToProjects}
               className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-card)] hover:border-[var(--accent-primary)] text-[var(--text-secondary)] hover:text-[var(--accent-primary)] font-medium transition-all duration-300 cursor-pointer">
               <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               {t('project.back_to_all')}
-            </Link>
+            </button>
           </motion.div>
         </section>
       </main>

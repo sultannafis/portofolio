@@ -22,7 +22,7 @@ export default function PremiumLoader() {
           className="relative w-24 h-24 mb-6"
         >
           <img
-            src="/images/Skyra-L1.png"
+            src="/images/skyra-l1.png"
             alt="Skyra AI Loading"
             className="w-full h-full object-contain filter drop-shadow-[0_0_15px_var(--accent-primary)]"
           />

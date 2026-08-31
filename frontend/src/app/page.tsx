@@ -69,25 +69,37 @@ export default function HomePage() {
   useEffect(() => {
     if (!loading && isLoaded) {
       const handleHashScroll = () => {
-        const hash = window.location.hash.replace('#', '');
-        if (hash) {
-          setTimeout(() => {
-            const el = document.getElementById(hash);
-            if (el) {
-              if (lenisRef.current) {
-                lenisRef.current.scrollTo(el, { offset: -80 });
-              } else {
-                const top = el.getBoundingClientRect().top + window.scrollY - 80;
-                window.scrollTo({ top, behavior: 'smooth' });
-              }
-            }
-          }, 300);
+        if (window.location.hash) {
+          const id = window.location.hash.replace('#', '');
+          scrollToId(id);
         }
       };
 
       handleHashScroll();
       window.addEventListener('hashchange', handleHashScroll);
       return () => window.removeEventListener('hashchange', handleHashScroll);
+    }
+  }, [loading, isLoaded]);
+
+  const scrollToId = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => {
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(el, { offset: -80 });
+        } else {
+          const top = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }, 300);
+    }
+  };
+
+  useEffect(() => {
+    const pending = sessionStorage.getItem('pendingScroll');
+    if (pending && !loading && isLoaded) {
+      scrollToId(pending);
+      sessionStorage.removeItem('pendingScroll');
     }
   }, [loading, isLoaded]);
 
@@ -211,17 +223,14 @@ export default function HomePage() {
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[var(--bg-primary)]" />
         <div className="absolute inset-0 texture-grid opacity-[0.15] dark:opacity-[0.2]" />
-        {/* Sky Blue / Navy Gradient Radial Glows */}
-        <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-[var(--accent-primary)] blur-[160px] opacity-[0.08]" />
-        <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] rounded-full bg-[var(--accent-secondary)] blur-[140px] opacity-[0.05]" />
         <div className="noise-bg" />
       </div>
 
       {/* ─── Refined NavBar ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl transition-all duration-500 border-b border-[var(--border-subtle)] bg-[var(--surface-glass)]">
         <div className="section-container flex items-center justify-between h-20">
-          <a href="#home" className="font-display text-xl font-bold tracking-tight text-[var(--text-primary)] hover:opacity-80 transition-opacity">
-            {settings.full_name ? settings.full_name.split(' ')[0] : 'Portfolio'}
+          <a href="/" onClick={(e) => { e.preventDefault(); scrollToId('home'); }} className="font-display text-xl font-bold tracking-tight text-[var(--text-primary)] hover:opacity-80 transition-opacity">
+            Portofolio
             <span className="text-[var(--accent-primary)]">.</span>
           </a>
 
@@ -230,9 +239,11 @@ export default function HomePage() {
               <a
                 key={item}
                 href={`#${item}`}
-                className="relative px-5 py-2.5 text-[0.8rem] font-medium uppercase tracking-[0.15em] transition-colors duration-300 rounded-full hover:bg-[var(--bg-secondary)]"
+                className="relative px-5 py-2.5 text-[0.85rem] font-medium tracking-wide transition-colors duration-300 rounded-full hover:bg-[var(--bg-secondary)] text-transform-capitalize"
                 style={{ color: activeSection === item ? 'var(--text-primary)' : 'var(--text-tertiary)' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToId(item);
                   setActiveSection(item);
                   isNavClick.current = true;
                   setTimeout(() => { isNavClick.current = false; }, 1000);
@@ -292,13 +303,15 @@ export default function HomePage() {
               <div className="px-6 py-6 flex flex-col gap-2">
                 {navItems.map((item) => (
                   <a key={item} href={`#${item}`}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       setMobileMenu(false);
+                      scrollToId(item);
                       setActiveSection(item);
                       isNavClick.current = true;
                       setTimeout(() => { isNavClick.current = false; }, 1000);
                     }}
-                    className="px-4 py-4 text-sm font-semibold uppercase tracking-wider rounded-xl transition-colors"
+                    className="px-4 py-4 text-sm font-semibold tracking-wide rounded-xl transition-colors capitalize"
                     style={{
                       background: activeSection === item ? 'var(--bg-secondary)' : 'transparent',
                       color: activeSection === item ? 'var(--text-primary)' : 'var(--text-secondary)'
@@ -344,9 +357,9 @@ export default function HomePage() {
               </motion.p>
 
               <motion.div initial="hidden" animate="visible" variants={fadeUpText} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 w-full px-6 lg:px-2">
-                <a href="#projects" className="btn-primary w-full sm:w-auto min-w-[180px] h-14 group flex items-center justify-center gap-2">
+                <button onClick={(e) => { e.preventDefault(); scrollToId('projects'); }} className="btn-primary w-full sm:w-auto min-w-[180px] h-14 group flex items-center justify-center gap-2">
                   {t('hero.cta')} <FiArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </a>
+                </button>
                 {settings.resume_url && (
                   <a href={settings.resume_url} target="_blank" rel="noopener noreferrer" className="btn-secondary w-full sm:w-auto min-w-[180px] h-14 group border-2 flex items-center justify-center relative overflow-hidden">
                     <span className="relative z-10">{t('hero.download_cv')}</span>
@@ -498,25 +511,22 @@ export default function HomePage() {
               <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-3xl border-2 border-[var(--border-accent)] opacity-50 z-0 hidden sm:block" />
 
               <div className="premium-card absolute inset-0 z-10 overflow-hidden rounded-3xl p-0 group">
-                {settings.profile_image_url ? (
-                  <>
-                    <img src={settings.profile_image_url} alt="Profile" className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/40 to-transparent opacity-80" />
-                    <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col">
-                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit mb-4">
-                        <FiMapPin className="w-3 h-3 text-[var(--accent-primary)]" />
-                        <span className="text-xs font-mono text-white tracking-wider">{settings.location || 'Jakarta, Indonesia'}</span>
-                      </span>
-                      <h4 className="text-3xl font-display font-medium text-white shadow-sm mb-1">{settings.full_name || t('hero.name')}</h4>
-                      <p className="text-[var(--accent-primary)] font-medium font-mono text-sm uppercase tracking-widest">{settings.title || t('hero.title')}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="w-full h-full flex flex-col bg-[var(--bg-card)] items-center justify-center text-center p-8">
-                    <FiUsers className="w-16 h-16 text-[var(--text-tertiary)] mb-6 opacity-30" />
-                    <p className="text-[var(--text-tertiary)] font-mono text-sm">{t('about.profile_placeholder')}</p>
-                  </div>
-                )}
+                <img 
+                  src={settings.profile_image_url || '/images/skyra-l1.png'} 
+                  alt="Profile" 
+                  fetchPriority="high"
+                  onError={(e) => { e.currentTarget.src = '/images/skyra-l1.png' }}
+                  className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/40 to-transparent opacity-80" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface-glass)] backdrop-blur-md border border-[var(--border-subtle)] w-fit mb-4">
+                    <FiMapPin className="w-3 h-3 text-[var(--accent-primary)]" />
+                    <span className="text-xs font-mono tracking-wider">{settings.location || 'Jakarta, Indonesia'}</span>
+                  </span>
+                  <h4 className="text-3xl font-display font-medium text-white shadow-sm mb-1">{settings.full_name || t('hero.name')}</h4>
+                  <p className="text-[var(--accent-primary)] font-medium font-mono text-sm tracking-widest">{settings.title || t('hero.title')}</p>
+                </div>
               </div>
             </motion.div>
 
@@ -591,7 +601,7 @@ export default function HomePage() {
 
               return (
                 <motion.div key={project.id || i} variants={fadeUpText} className={`group cursor-pointer relative ${isFeatured ? 'lg:col-span-2' : ''}`}>
-                  <Link href={`/projects/${project.slug || projectSlugify(project.title)}`} className="block w-full h-full">
+                  <Link href={`/project/${project.slug || projectSlugify(project.title)}`} className="block w-full h-full">
                     <div className={`w-full h-full p-0 flex flex-col relative overflow-hidden rounded-[24px] border border-[var(--border-color)] bg-[var(--bg-card)] backdrop-blur-sm shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] hover:border-[var(--accent-primary)]/40 transition-all duration-500 hover:-translate-y-2 ${isFeatured ? 'lg:flex-row' : ''}`}>
 
                       {/* ── Image Container with Browser Frame ── */}

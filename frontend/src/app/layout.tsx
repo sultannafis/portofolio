@@ -1,7 +1,26 @@
+import { Plus_Jakarta_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
 import axios from 'axios';
 import { ClientToaster } from "@/components/ClientToaster";
+
+const fontSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const fontDisplay = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const fontMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   let title = "Portfolio | Full Stack Developer";
@@ -34,9 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
     },
     icons: {
-      icon: '/images/Skyra-L1.png',
-      shortcut: '/images/Skyra-L1.png',
-      apple: '/images/Skyra-L1.png',
+      icon: '/images/skyra-l1.png',
+      shortcut: '/images/skyra-l1.png',
+      apple: '/images/skyra-l1.png',
     },
   };
 }
@@ -57,7 +76,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning className="font-sans min-h-screen transition-colors duration-300" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+      <body suppressHydrationWarning className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} font-sans min-h-screen transition-colors duration-300`} style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
         {children}
         <div suppressHydrationWarning>
           <ClientToaster />
