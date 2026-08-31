@@ -11,7 +11,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { Project, Skill, Certificate, Experience } from '@/types';
 import toast from 'react-hot-toast';
 import { FiGithub, FiExternalLink, FiSend, FiSun, FiMoon, FiMenu, FiX, FiArrowUp, FiGlobe, FiUsers, FiLinkedin, FiTwitter, FiInstagram, FiMail, FiMapPin, FiCalendar, FiBriefcase, FiArrowRight } from 'react-icons/fi';
-import * as SiIcons from 'react-icons/si';
+import { SiReact, SiNextdotjs, SiTypescript, SiLaravel } from 'react-icons/si';
 import Footer from '@/components/layout/Footer';
 import PremiumLoader from '@/components/ui/PremiumLoader';
 
@@ -430,7 +430,7 @@ export default function HomePage() {
                   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute -right-1 sm:-right-6 top-16 lg:top-20 z-20 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-xl backdrop-blur-md"
                 >
-                  <SiIcons.SiReact className="w-5 h-5 sm:w-7 sm:h-7 text-[#61DAFB]" />
+                  <SiReact className="w-5 h-5 sm:w-7 sm:h-7 text-[#61DAFB]" />
                 </motion.div>
 
                 <motion.div
@@ -438,7 +438,7 @@ export default function HomePage() {
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                   className="absolute left-1 sm:-left-6 bottom-16 lg:bottom-24 z-20 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-xl backdrop-blur-md"
                 >
-                  <SiIcons.SiNextdotjs className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--text-primary)]" />
+                  <SiNextdotjs className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--text-primary)]" />
                 </motion.div>
 
                 <motion.div
@@ -446,7 +446,7 @@ export default function HomePage() {
                   transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
                   className="absolute right-6 sm:right-8 -bottom-3 sm:-bottom-4 z-20 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-xl backdrop-blur-md"
                 >
-                  <SiIcons.SiTypescript className="w-5 h-5 sm:w-7 sm:h-7 text-[#3178C6]" />
+                  <SiTypescript className="w-5 h-5 sm:w-7 sm:h-7 text-[#3178C6]" />
                 </motion.div>
 
                 <motion.div
@@ -454,7 +454,7 @@ export default function HomePage() {
                   transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
                   className="absolute -left-3 sm:-left-8 top-1/2 -translate-y-1/2 z-20 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-xl backdrop-blur-md"
                 >
-                  <SiIcons.SiLaravel className="w-5 h-5 sm:w-7 sm:h-7 text-[#FF2D20]" />
+                  <SiLaravel className="w-5 h-5 sm:w-7 sm:h-7 text-[#FF2D20]" />
                 </motion.div>
 
               </div>
@@ -547,12 +547,12 @@ export default function HomePage() {
           {/* Row 1 */}
           <div className="flex w-max animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused]">
             {[...finalSkills, ...finalSkills].map((skill, i) => {
-              const iconKey = skill.icon ? `Si${skill.icon.charAt(0).toUpperCase()}${skill.icon.slice(1).toLowerCase()}` : `Si${skill.name.charAt(0).toUpperCase()}${skill.name.slice(1).replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}`;
-              const IconComponent = (SiIcons as any)[iconKey] || (SiIcons as any)[`Si${skill.name.replace(/[^a-zA-Z0-9]/g, '')}`];
+              const iconSlug = skill.icon ? skill.icon.toLowerCase() : skill.name.toLowerCase().replace(/[^a-z0-9]/g, '');
               return (
                 <div key={`${skill.id}-row1-${i}`} className="flex items-center gap-4 px-6 py-4 mx-3 rounded-2xl premium-card group cursor-default" style={{ minWidth: 'max-content' }}>
-                  <div className="text-2xl text-[var(--text-secondary)] group-hover:text-[var(--accent-primary)] transition-colors duration-300">
-                    {IconComponent ? <IconComponent /> : <span className="font-bold">{skill.name.charAt(0)}</span>}
+                  <div className="w-7 h-7 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                    <img src={`https://cdn.simpleicons.org/${iconSlug}`} alt={skill.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+                    <span className="hidden font-bold text-xl">{skill.name.charAt(0)}</span>
                   </div>
                   <span className="font-display font-medium text-base tracking-wide text-[var(--text-primary)]">{skill.name}</span>
                 </div>
@@ -563,12 +563,12 @@ export default function HomePage() {
           {/* Row 2 - Reverse */}
           <div className="flex w-max animate-[marquee-reverse_50s_linear_infinite] hover:[animation-play-state:paused]">
             {[...finalSkills].reverse().concat([...finalSkills].reverse()).map((skill, i) => {
-              const iconKey = skill.icon ? `Si${skill.icon.charAt(0).toUpperCase()}${skill.icon.slice(1).toLowerCase()}` : `Si${skill.name.charAt(0).toUpperCase()}${skill.name.slice(1).replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}`;
-              const IconComponent = (SiIcons as any)[iconKey] || (SiIcons as any)[`Si${skill.name.replace(/[^a-zA-Z0-9]/g, '')}`];
+              const iconSlug = skill.icon ? skill.icon.toLowerCase() : skill.name.toLowerCase().replace(/[^a-z0-9]/g, '');
               return (
                 <div key={`${skill.id}-row2-${i}`} className="flex items-center gap-4 px-6 py-4 mx-3 rounded-2xl premium-card group cursor-default" style={{ minWidth: 'max-content' }}>
-                  <div className="text-2xl text-[var(--text-secondary)] group-hover:text-[var(--accent-primary)] transition-colors duration-300">
-                    {IconComponent ? <IconComponent /> : <span className="font-bold">{skill.name.charAt(0)}</span>}
+                  <div className="w-7 h-7 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                    <img src={`https://cdn.simpleicons.org/${iconSlug}`} alt={skill.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+                    <span className="hidden font-bold text-xl">{skill.name.charAt(0)}</span>
                   </div>
                   <span className="font-display font-medium text-base tracking-wide text-[var(--text-primary)]">{skill.name}</span>
                 </div>
